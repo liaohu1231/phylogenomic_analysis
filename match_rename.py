@@ -7,7 +7,7 @@ f1 = open('novel_order.csv','r')
 
 name = f1.readlines()
 
-path = "/hwfssz5/ST_CANCER/CGR/USER/liaohu/data/genome_4000/novel_order/"
+path = "~/genome_4000/novel_order/"
 
 files = os.listdir(path) #得到文件夹下的所有文件名称
 
