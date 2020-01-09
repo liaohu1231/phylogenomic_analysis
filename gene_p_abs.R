@@ -1,8 +1,10 @@
+###the importing file was the file gene_presence_absence.Rtab from package roary
+
 ###function of pangenome calculation
 pangenome = function(x,y,z){
   for(i in 1:y){
     for (j in 1:500) {
-      data2=sample(x,i,replace = T) ###´ÓÁĞÏòËæ»úÈ¡ÑùiÁĞ
+      data2=sample(x,i,replace = T) ###ä»åˆ—å‘éšæœºå–æ ·iåˆ—
       suma=rowSums(data2)
       sumrow=length(which(suma>0))
       write.table(sumrow,file = z,append = T,eol = '\t', row.names = F, col.names = F, quote = F)
@@ -14,7 +16,7 @@ pangenome = function(x,y,z){
 coregenome=function(x,y,z){
   for(i in 1:y){
     for (j in 1:500) {
-      data2=sample(x,i,replace = T) ###´ÓÁĞÏòËæ»úÈ¡ÑùiÁĞ
+      data2=sample(x,i,replace = T) ###ä»åˆ—å‘éšæœºå–æ ·iåˆ—
       suma=rowSums(data2)
       sumrow=length(which(suma>=i*0.99))
       write.table(sumrow,file = z,append = T,eol = '\t', row.names = F, col.names = F, quote = F)
@@ -25,88 +27,81 @@ coregenome=function(x,y,z){
 
 
 
-dat=read.csv("D:/ÎÄÕÂÓë×ÊÁÏ/ÖØ·ÖÀàmarinobacter2/ÎÄÕÂ1015/genome/gene_presence_absence.Rtab",sep="\t",header=T,row.names=1)
+dat=read.csv("~/gene_presence_absence.Rtab",sep="\t",header=T,row.names=1)
 a=apply(dat, 1, function(x){
   sum(x>0)/length(x)
 })
-###½ØÈ¡preudomondales
+
+###extract dendgram
 library(pheatmap)
 p=pheatmap(dat[1:6000,])
 order_col = p$tree_col$order
 dat_name=data.frame(dat[,order_col])
+
+###æˆªå–preudomondales
 dat_pse=dat_name[,57:257]
 b=apply(dat_pse,1,function(x){sum(x>0)/length(x)})
 dat_name=cbind(b,dat_pse)
 dat_name=dat_name[order(dat_name$b,decreasing = T),]
-dat_name_2=dat_name[dat_name$b>0.99,]
-
-
-a=as.matrix(a)
-plot(density(a[1:6000,]))
+dat_name_2=dat_name[dat_name$b>0.99,] ###æŸ¥çœ‹preudomondalesçš„åŒæºåŸºå› ä¸ºå¤šå°‘
 
 ##pangenome number
+pangenome(x = dat,y = 257,z="~/pan_accumulation_number.txt")
 
-#pangenome(x = dat,y = 257,z="D:/ÎÄÕÂÓë×ÊÁÏ/ÖØ·ÖÀàmarinobacter2/ÎÄÕÂ1015/genome/pan_accumulation_number.txt")
-
-#»æ³öpan gene»ıÀÛÇúÏß
-pan = read.table("D:/ÎÄÕÂÓë×ÊÁÏ/ÖØ·ÖÀàmarinobacter2/ÎÄÕÂ1015/genome/pan_accumulation_number.txt", sep = '\t')
+#ç»˜å‡ºpan geneç§¯ç´¯æ›²çº¿
+pan = read.table("~/pan_accumulation_number.txt", sep = '\t')
 pan=t(pan[,1:257])
 par(mar=c(4,4,1,1),pin=c(6:5))
 x=c(1:257)
 boxplot(pan, col="green", outline=F,  axes=FALSE, ann=FALSE)
-axis(1, at=10*1:257) #Ìí¼Óºá×ø±ê
-axis(2,las=1,at=20000*0:200000) #Ìí¼Ó×ó²à×İ×ø±ê
-coregenome(x = dat,y = 257,z="D:/ÎÄÕÂÓë×ÊÁÏ/ÖØ·ÖÀàmarinobacter2/ÎÄÕÂ1015/genome/core_accumulation_number_2.txt")
-par(new=T) #ÔÚÏÖÔÚµÄÍ¼ÖĞÌí¼ÓĞÂÍ¼£¬²»¼ÓÕâ¸öÃüÁî»áÉú³ÉÒ»¸öĞÂÍ¼
-#core = read.table("D:/ÎÄÕÂÓë×ÊÁÏ/ÖØ·ÖÀàmarinobacter2/ÎÄÕÂ1015/genome/core_accumulation_number.txt", sep = '\t')
+axis(1, at=10*1:257) #æ·»åŠ æ¨ªåæ ‡
+axis(2,las=1,at=20000*0:200000) #æ·»åŠ å·¦ä¾§çºµåæ ‡
+coregenome(x = dat,y = 257,z="~/core_accumulation_number_2.txt")
+par(new=T) #åœ¨ç°åœ¨çš„å›¾ä¸­æ·»åŠ æ–°å›¾ï¼Œä¸åŠ è¿™ä¸ªå‘½ä»¤ä¼šç”Ÿæˆä¸€ä¸ªæ–°å›¾
+
+###corgenome
+core = read.table("~/core_accumulation_number.txt", sep = '\t')
 #core=t(core)
 boxplot(core, col = "yellow", outline=F, axes=FALSE,ann=F)
-#axis(1, at=1:257) #Ìí¼Óºá×ø±ê
-axis(4,las=0,at=500*0:6000) #Ìí¼ÓÓÒ²à×İ×ø±ê
+#axis(1, at=1:257) #æ·»åŠ æ¨ªåæ ‡
+axis(4,las=0,at=500*0:6000) #æ·»åŠ å³ä¾§çºµåæ ‡
 title(ylab = "Number of genes (pan)",line = 4)
 title(xlab = "Number of genomes",line = 2)
 mtext("Number of genes (core)",srt=90,side=4, line=2)
-#dat2=dat[-grep(pattern="Acinetobacter",x = colnames(dat))]
-#dat2=dat2[-grep(pattern="Moraxella",x = colnames(dat2))]
-#dat2=dat2[-grep(pattern="Psychrobacter",x = colnames(dat2))]
-#dat2=dat2[-grep(pattern="Perlucidibaca",x = colnames(dat2))]
-#dat2=dat2[-grep(pattern="Kangiella",x = colnames(dat2))]
-#coregenome(x = dat2,y = 203,z="D:/ÎÄÕÂÓë×ÊÁÏ/ÖØ·ÖÀàmarinobacter2/ÎÄÕÂ1015/genome/core_accumulation_number_203.txt")
-par(new=T) #ÔÚÏÖÔÚµÄÍ¼ÖĞÌí¼ÓĞÂÍ¼£¬²»¼ÓÕâ¸öÃüÁî»áÉú³ÉÒ»¸öĞÂÍ¼
-core_203 = read.table("D:/ÎÄÕÂÓë×ÊÁÏ/ÖØ·ÖÀàmarinobacter2/ÎÄÕÂ1015/genome/core_accumulation_number_203.txt", sep = '\t')
-core_203=t(core_203)
-boxplot(core_203, col = "red", outline=F, ylab = "Number of genes (core)", axes=FALSE, ann=F)
-#axis(1, at=1:257) #Ìí¼Óºá×ø±ê
-#axis(4,las=0,at=500*0:6000) #Ìí¼Ó×ó²à×İ×ø±ê
+
+
+###è®¡ç®—Manhattan distance
 distaance=dist(t(dat[1:100000,]),method = "manhattan")
 distaance=as.matrix(distaance)
 
+
+####function pca
 pca <- function(data){
-  dat <- scale(data) #±ê×¼»¯
-  covdat <- cov(dat)  #ÇóĞ­·½²î¾ØÕó
-  eigendat <- eigen(covdat)  #ÇóÌØÕ÷Öµ¡¢ÌØÕ÷ÏòÁ¿
-  eigenValue <- eigendat$values  #ÌØÕ÷Öµ
-  eigenVector <- eigendat$vectors  #ÌØÕ÷ÏòÁ¿
-  order_value <- order(eigenValue,decreasing = T)  #ÓÉ´óµ½Ğ¡ÅÅÁĞÌØÕ÷Öµ
+  dat <- scale(data) #æ ‡å‡†åŒ–
+  covdat <- cov(dat)  #æ±‚åæ–¹å·®çŸ©é˜µ
+  eigendat <- eigen(covdat)  #æ±‚ç‰¹å¾å€¼ã€ç‰¹å¾å‘é‡
+  eigenValue <- eigendat$values  #ç‰¹å¾å€¼
+  eigenVector <- eigendat$vectors  #ç‰¹å¾å‘é‡
+  order_value <- order(eigenValue,decreasing = T)  #ç”±å¤§åˆ°å°æ’åˆ—ç‰¹å¾å€¼
   values <- eigenValue[order_value] 
   valueSum <- sum(values) 
-  cumVar <- cumsum(values)/valueSum * 100  #¼ÆËãÖ÷³É·ÖµÃ·Ö¡£
+  cumVar <- cumsum(values)/valueSum * 100  #è®¡ç®—ä¸»æˆåˆ†å¾—åˆ†ã€‚
   order_vector <- eigenVector[,order_value] 
-  principal <- dat %*% order_vector  #Çó½âÖ÷³É·Ö
+  principal <- dat %*% order_vector  #æ±‚è§£ä¸»æˆåˆ†
   return(list(PCA=principal, cumVar=cumVar))
 }
 
 
-
+####pcoa
 library(vegan)
 pcoa <- cmdscale(distaance, k = (nrow(t(dat)) - 1), eig = TRUE)
 point <- data.frame(pcoa$point)
 species <- wascores(pcoa$points[,1:2], t(dat))
 
-#×ø±êÖá½âÊÍÁ¿£¨Ç°Á½Öá£©
+#åæ ‡è½´è§£é‡Šé‡ï¼ˆå‰ä¸¤è½´ï¼‰
 pcoa_eig <- (pcoa$eig)[1:2] / sum(pcoa$eig)
 
-#ÌáÈ¡Ñù±¾µã×ø±ê£¨Ç°Á½Öá£©
+#æå–æ ·æœ¬ç‚¹åæ ‡ï¼ˆå‰ä¸¤è½´ï¼‰
 sample_site <- data.frame({pcoa$point})[1:2]
 names(sample_site)[1:2] <- c('PCoA1', 'PCoA2')
 sample_site$group=paste(sapply(strsplit(rownames(sample_site),split = "_"),"[",1))
@@ -117,13 +112,13 @@ p<- ggplot(sample_site, aes(PCoA1, PCoA2,group=group)) +
         legend.key = element_rect(fill = 'transparent')) +
   #geom_vline(xintercept = 0, color = 'gray', size = 0.4) + 
   #geom_hline(yintercept = 0, color = 'gray', size = 0.4) +
-  #geom_polygon(data = group_border, aes(fill=Group)) + #»æÖÆ¶à±ßĞÎÇøÓò
-  geom_point(aes(color = group), alpha = 0.8) + #¿ÉÔÚÕâÀïĞŞ¸ÄµãµÄÍ¸Ã÷¶È¡¢´óĞ¡
+  #geom_polygon(data = group_border, aes(fill=Group)) + #ç»˜åˆ¶å¤šè¾¹å½¢åŒºåŸŸ
+  geom_point(aes(color = group), alpha = 0.8) + #å¯åœ¨è¿™é‡Œä¿®æ”¹ç‚¹çš„é€æ˜åº¦ã€å¤§å°
   scale_size_continuous(range = c(1,20))+
-  scale_shape_manual()+  #¿ÉÔÚÕâÀïĞŞ¸ÄµãµÄĞÎ×´
-  scale_color_manual(aesthetics = "fill") + #¿ÉÔÚÕâÀïĞŞ¸ÄµãµÄÑÕÉ«
-  #scale_fill_manual(values = c('#C673FF2E', '#73D5FF2E', '#49C35A2E', '#FF985C2E')) + #¿ÉÔÚÕâÀïĞŞ¸ÄÇø¿éµÄÑÕÉ«
-  #guides(fill = guide_legend(order = 1), shape = guide_legend(order = 2), color = guide_legend(order = 3)) #ÉèÖÃÍ¼ÀıÕ¹Ê¾Ë³Ğò
+  scale_shape_manual()+  #å¯åœ¨è¿™é‡Œä¿®æ”¹ç‚¹çš„å½¢çŠ¶
+  scale_color_manual(aesthetics = "fill") + #å¯åœ¨è¿™é‡Œä¿®æ”¹ç‚¹çš„é¢œè‰²
+  #scale_fill_manual(values = c('#C673FF2E', '#73D5FF2E', '#49C35A2E', '#FF985C2E')) + #å¯åœ¨è¿™é‡Œä¿®æ”¹åŒºå—çš„é¢œè‰²
+  #guides(fill = guide_legend(order = 1), shape = guide_legend(order = 2), color = guide_legend(order = 3)) #è®¾ç½®å›¾ä¾‹å±•ç¤ºé¡ºåº
   
   labs(x = paste('PCoA axis1: ', round(100 * pcoa_eig[1], 2), '%'), 
        y = paste('PCoA axis2: ', round(100 * pcoa_eig[2], 2), '%'))+
